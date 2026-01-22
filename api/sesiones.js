@@ -3,42 +3,43 @@ import * as cheerio from "cheerio";
 
 export default async function handler(req, res) {
   try {
-    const response = await fetch("https://industrialcopera.net/programacion/", {
-      headers: { "User-Agent": "Mozilla/5.0" }
-    });
-
+    const url = "https://industrialcopera.janto.es";
+    const response = await fetch(url, { headers: { "User-Agent": "Mozilla/5.0" } });
     const html = await response.text();
     const $ = cheerio.load(html);
+
     const items = [];
 
-    $("body *").each((_, el) => {
-      const text = $(el).text().replace(/\s+/g, " ").trim();
-      if (!text) return;
+    $(".vertical-card").each((_, el) => {
+      const day = $(el).find(".vertical-card__day").text().trim();
+      const month = $(el).find(".vertical-card__month").text().trim();
+      const year = $(el).find(".vertical-card__year").text().trim();
+      const titleRaw = $(el).find(".vertical-card__title").text().replace(/\s+/g, " ").trim();
 
-      const m = text.match(/(\d{1,2}\s+ENE|\d{1,2}\s+FEB|\d{1,2}\s+MAR|\d{1,2}\s+ABR|\d{1,2}\s+MAY|\d{1,2}\s+JUN|\d{1,2}\s+JUL|\d{1,2}\s+AGO|\d{1,2}\s+SEP|\d{1,2}\s+OCT|\d{1,2}\s+NOV|\d{1,2}\s+DIC)\s+(.{3,60})/i);
+      if (!day || !month || !year || !titleRaw) return;
 
-      if (m) {
-        const date = m[1].toUpperCase();
-        const title = m[2].split("ENTRADAS")[0].split("+")[0].trim();
+      if (!/industrial\s+copera/i.test(titleRaw)) return;
 
-        if (title.length > 2) {
-          items.push({ date, title });
-        }
-      }
+      const monthMap = {
+        "ene.": "01", "feb.": "02", "mar.": "03", "abr.": "04",
+        "may.": "05", "jun.": "06", "jul.": "07", "ago.": "08",
+        "sep.": "09", "oct.": "10", "nov.": "11", "dic.": "12"
+      };
+
+      const mm = monthMap[month.toLowerCase()] || "01";
+      const yyyy = `20${year}`;
+      const dateISO = `${yyyy}-${mm}-${day.padStart(2, "0")}`;
+
+      // Limpieza del título
+      const title = titleRaw
+        .replace(/^\d{4}\s+\d{2}\s+\d{2}\s+/g, "")
+        .replace(/industrial\s+copera\s+presenta:\s*/i, "")
+        .trim();
+
+      items.push({ date: dateISO, title });
     });
 
-    const unique = [];
-    const seen = new Set();
-
-    for (const it of items) {
-      const key = it.date + it.title;
-      if (!seen.has(key)) {
-        seen.add(key);
-        unique.push(it);
-      }
-    }
-
-    res.status(200).json(unique.slice(0, 20));
+    res.status(200).json(items);
   } catch (e) {
     res.status(500).json({ error: "Scraping failed", detail: e.message });
   }
