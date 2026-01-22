@@ -1,12 +1,9 @@
 {
   "name": "copera-proxy",
   "version": "1.0.0",
-  "main": "index.js",
-  "scripts": {
-    "start": "node api/sesiones.js"
-  },
+  "type": "module",
   "dependencies": {
-    "playwright-core": "^1.35.0",
-    "chrome-aws-lambda": "^10.3.0"
+    "cheerio": "^1.0.0-rc.12",
+    "node-fetch": "^3.3.2"
   }
 }
