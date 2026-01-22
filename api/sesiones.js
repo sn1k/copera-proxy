@@ -1,65 +1,51 @@
-import fetch from "node-fetch";
+import type { VercelRequest, VercelResponse } from '@vercel/node'
+import fetch from 'node-fetch'
+import * as cheerio from 'cheerio'
 
-export default async function handler(req, res) {
+export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
-    res.setHeader("Cache-Control", "no-store");
+    const targetUrl = 'https://industrialcopera.net'
+    const html = await fetch(targetUrl).then(r => r.text())
+    const $ = cheerio.load(html)
 
-    const url = "https://apiw5.janto.es/v5/events/01?";
+    const sessions: any[] = []
 
-    const response = await fetch(url, {
-      headers: {
-        "User-Agent": "Mozilla/5.0",
-        "Accept": "application/json, text/plain, */*",
-        "Referer": "https://industrialcopera.janto.es/",
-        "Origin": "https://industrialcopera.janto.es"
-      }
-    });
+    // Solo sesiones: li.available
+    $('.event-list li.available').each((_, el) => {
+      const dateRaw = $(el).find('.date').text().trim()
+      const titleRaw = $(el).find('.artist').text().trim()
+      const infoRaw = $(el).find('.location').text().trim()
+      const url = $(el).find('a.buy').attr('href')
 
-    const data = await response.json();
+      const id =
+        url?.split('/').filter(Boolean).pop() ||
+        titleRaw.toLowerCase().replace(/\s+/g, '-')
 
-    if (!data || !data.events) {
-      return res.status(200).json([]);
-    }
+      sessions.push({
+        id,
+        title: cleanText(titleRaw),
+        date_raw: cleanText(dateRaw),
+        info: cleanText(infoRaw),
+        url,
+        type: 'session'
+      })
+    })
 
-    const events = data.events;
-    const items = [];
+    res.setHeader('Access-Control-Allow-Origin', '*')
+    res.setHeader('Cache-Control', 's-maxage=3600, stale-while-revalidate')
 
-    for (const key in events) {
-      const ev = events[key];
-      if (!ev.name) continue;
-
-      if (!/industrial\s+copera/i.test(ev.name)) continue;
-
-      const ts = ev.startDate * 1000;
-      const d = new Date(ts);
-
-      const day = String(d.getDate()).padStart(2, "0");
-      const month = String(d.getMonth() + 1).padStart(2, "0");
-      const year = String(d.getFullYear()).slice(-2);
-
-      const date = `${day}/${month}/${year}`;
-
-      const title = ev.name
-        .replace(/^\d{4}\s+\d{2}\s+\d{2}\s+/g, "")
-        .replace(/industrial\s+copera\s+presenta:\s*/i, "")
-        .trim();
-
-      items.push({
-        date,
-        title,
-        image: ev.image,
-        url: `https://industrialcopera.janto.es/${ev.urlName}`
-      });
-    }
-
-    items.sort((a, b) => {
-      const pa = a.date.split("/").reverse().join("");
-      const pb = b.date.split("/").reverse().join("");
-      return pa.localeCompare(pb);
-    });
-
-    res.status(200).json(items);
-  } catch (e) {
-    res.status(500).json({ error: "Failed", detail: e.message });
+    res.status(200).json({
+      source: 'industrialcopera.net',
+      count: sessions.length,
+      sessions
+    })
+  } catch (error: any) {
+    res.status(500).json({
+      error: 'Failed to fetch sessions',
+      details: error?.message || error
+    })
   }
 }
+
+function cleanText(text: string) {
+  return text
