@@ -2,19 +2,26 @@ import fetch from "node-fetch";
 
 export default async function handler(req, res) {
   try {
-    res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
-    res.setHeader("Pragma", "no-cache");
-    res.setHeader("Expires", "0");
-    res.setHeader("Surrogate-Control", "no-store");
+    res.setHeader("Cache-Control", "no-store");
 
     const url = "https://apiw5.janto.es/v5/events/01?";
+
     const response = await fetch(url, {
-      headers: { "User-Agent": "Mozilla/5.0" }
+      headers: {
+        "User-Agent": "Mozilla/5.0",
+        "Accept": "application/json, text/plain, */*",
+        "Referer": "https://industrialcopera.janto.es/",
+        "Origin": "https://industrialcopera.janto.es"
+      }
     });
 
     const data = await response.json();
-    const events = data.events || {};
 
+    if (!data || !data.events) {
+      return res.status(200).json([]);
+    }
+
+    const events = data.events;
     const items = [];
 
     for (const key in events) {
