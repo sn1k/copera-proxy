@@ -2,6 +2,11 @@ import fetch from "node-fetch";
 
 export default async function handler(req, res) {
   try {
+    res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
+    res.setHeader("Pragma", "no-cache");
+    res.setHeader("Expires", "0");
+    res.setHeader("Surrogate-Control", "no-store");
+
     const url = "https://apiw5.janto.es/v5/events/01?";
     const response = await fetch(url, {
       headers: { "User-Agent": "Mozilla/5.0" }
