@@ -1,4 +1,33 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
+// import fetch from 'node-fetch'
+// import * as cheerio from 'cheerio'
+
+export default async function handler(req: VercelRequest, res: VercelResponse) {
+  res.setHeader('Access-Control-Allow-Origin', '*')
+
+  res.status(200).json({
+    sessions: [
+      {
+        date_raw: '',
+        title: 'CURRO',
+        info: 'PAGA LA LOTERÍA'
+      },
+      {
+        date_raw: '',
+        title: 'CURRO',
+        info: 'PAGA LA LOTERÍA'
+      },
+      {
+        date_raw: '',
+        title: 'CURRO',
+        info: 'PAGA LA LOTERÍA'
+      }
+    ]
+  })
+}
+
+/*
+
 import fetch from 'node-fetch'
 import * as cheerio from 'cheerio'
 
@@ -10,7 +39,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     const sessions: any[] = []
 
-    // Solo sesiones: li.available
     $('.event-list li.available').each((_, el) => {
       const dateRaw = $(el).find('.date').text().trim()
       const titleRaw = $(el).find('.artist').text().trim()
@@ -49,3 +77,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
 function cleanText(text: string) {
   return text
+    .replace(/\s+/g, ' ')
+    .trim()
+}
+
+*/
+
