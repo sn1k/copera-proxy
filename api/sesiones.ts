@@ -10,17 +10,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       {
         date_raw: '',
         title: 'CURRO LA LOTERIA',
-        info: 'PAGA LA LOTERÍA'
+        info: 'RECARGA LA LOTERÍA'
       },
       {
         date_raw: '',
         title: 'CURRO CARGA LA LOTERIA',
-        info: 'PAGA LA LOTERÍA'
+        info: 'RECARGA LA LOTERÍA'
       },
       {
         date_raw: '',
         title: 'CURRO CARGA LA LOTERIA',
-        info: 'PAGA LA LOTERÍA'
+        info: 'RECARGA LA LOTERÍA'
       }
     ]
   })
