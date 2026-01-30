@@ -1,35 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
-// import fetch from 'node-fetch'
-// import * as cheerio from 'cheerio'
-
-export default async function handler(req: VercelRequest, res: VercelResponse) {
-  res.setHeader('Access-Control-Allow-Origin', '*')
-
-  res.status(200).json({
-    sessions: [
-      {
-        date_raw: '',
-        title: 'CURRO LA LOTERIA',
-        info: 'RECARGA LA LOTERÍA'
-      },
-      {
-        date_raw: '',
-        title: 'CURRO CARGA LA LOTERIA',
-        info: 'RECARGA LA LOTERÍA'
-      },
-      {
-        date_raw: '',
-        title: 'CURRO CARGA LA LOTERIA',
-        info: 'RECARGA LA LOTERÍA'
-      }
-    ]
-  })
-}
-
-/*
-
 import fetch from 'node-fetch'
 import * as cheerio from 'cheerio'
+
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
@@ -81,5 +53,5 @@ function cleanText(text: string) {
     .trim()
 }
 
-*/
+
 
