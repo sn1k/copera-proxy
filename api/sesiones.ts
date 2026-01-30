@@ -9,17 +9,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     sessions: [
       {
         date_raw: '',
-        title: 'CURRO',
+        title: 'CURRO CARGA LA LOTERIA',
         info: 'PAGA LA LOTERÍA'
       },
       {
         date_raw: '',
-        title: 'CURRO',
+        title: 'CURRO CARGA LA LOTERIA',
         info: 'PAGA LA LOTERÍA'
       },
       {
         date_raw: '',
-        title: 'CURRO',
+        title: 'CURRO CARGA LA LOTERIA',
         info: 'PAGA LA LOTERÍA'
       }
     ]
